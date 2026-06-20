@@ -48,10 +48,10 @@ if ($product) {
         $allowed_categories = [
             'Massage Sofa',
             'Massage Office Chair',
-            'Massage Beach Chair',
+            'Massage Outdoor Chair',
             'Massage Lounge Chair'
         ];
-        
+
         $found_category = false;
         foreach ($product['categories'] as $cat) {
             $cat_name = trim($cat['name']);
@@ -64,19 +64,23 @@ if ($product) {
             // Loose match fallback
             if (stripos($cat_name, 'sofa') !== false) {
                 $subtitle = 'Massage Sofa';
-                $found_category = true; break;
+                $found_category = true;
+                break;
             } elseif (stripos($cat_name, 'office') !== false) {
                 $subtitle = 'Massage Office Chair';
-                $found_category = true; break;
-            } elseif (stripos($cat_name, 'beach') !== false) {
-                $subtitle = 'Massage Beach Chair';
-                $found_category = true; break;
+                $found_category = true;
+                break;
+            } elseif (stripos($cat_name, 'outdoor') !== false) {
+                $subtitle = 'Massage Outdoor Chair';
+                $found_category = true;
+                break;
             } elseif (stripos($cat_name, 'lounge') !== false) {
                 $subtitle = 'Massage Lounge Chair';
-                $found_category = true; break;
+                $found_category = true;
+                break;
             }
         }
-        
+
         if (!$found_category) {
             $subtitle = 'Massage Office Chair'; // Default safe fallback
         }
@@ -103,15 +107,23 @@ if ($product) {
                     </svg>
                 </a>
 
-                <img id="pd-main-image" class="pd-main-img" src="<?= htmlspecialchars($image) ?>"
-                    alt="<?= htmlspecialchars($name) ?>">
+                <!-- Image shield: transparent overlay blocks right-click/drag on the main image -->
+                <div class="pd-main-img-wrap">
+                    <img id="pd-main-image" class="pd-main-img" src="<?= htmlspecialchars($image) ?>"
+                        alt="<?= htmlspecialchars($name) ?>" draggable="false">
+                    <div class="pd-img-shield" aria-hidden="true"></div>
+                </div>
 
                 <?php if (count($images) > 1): ?>
                     <div class="pd-thumbs">
                         <?php foreach ($images as $i => $img): ?>
-                            <img class="pd-thumb <?= $i === 0 ? 'active' : '' ?>" src="<?= htmlspecialchars($img['src']) ?>"
-                                alt="<?= htmlspecialchars($name) ?> view <?= $i + 1 ?>"
-                                onmouseenter="pdSelectImage(this, '<?= htmlspecialchars($img['src']) ?>')">
+                            <!-- Wrap each thumb so the shield blocks right-click while JS handles hover via data attr -->
+                            <div class="pd-thumb-wrap<?= $i === 0 ? ' active' : '' ?>"
+                                data-src="<?= htmlspecialchars($img['src']) ?>">
+                                <img class="pd-thumb" src="<?= htmlspecialchars($img['src']) ?>"
+                                    alt="<?= htmlspecialchars($name) ?> view <?= $i + 1 ?>" draggable="false">
+                                <div class="pd-img-shield" aria-hidden="true"></div>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
@@ -176,8 +188,9 @@ if ($product) {
                 <polyline points="9 12 11 14 15 10"></polyline>
             </svg>
             <div>
-                <div class="pd-banner-title">Product inquiry handled by Skywise</div>
-                <div class="pd-banner-sub">B2B quotation · Product coordination · Export support</div>
+                <div class="pd-banner-title">For more information, please contact Skywise Catalog available upon request
+                </div>
+                <div class="pd-banner-sub">Catalog available upon request</div>
             </div>
         </div>
 
@@ -185,15 +198,27 @@ if ($product) {
 </main>
 
 <script>
-    function pdSelectImage(thumbEl, src) {
-        // Swap main image
-        document.getElementById('pd-main-image').src = src;
-        // Update active thumb highlight
-        document.querySelectorAll('.pd-thumb').forEach(function (t) {
-            t.classList.remove('active');
+    document.addEventListener('DOMContentLoaded', function () {
+        var thumbWraps = document.querySelectorAll('.pd-thumb-wrap');
+
+        thumbWraps.forEach(function (wrap) {
+            // Hover via mouseenter on the wrapper (shield passes events to parent)
+            wrap.addEventListener('mouseenter', function () {
+                var src = wrap.dataset.src;
+                if (src) {
+                    document.getElementById('pd-main-image').src = src;
+                    thumbWraps.forEach(function (w) { w.classList.remove('active'); });
+                    wrap.classList.add('active');
+                }
+            });
+
+            // Block right-click on the wrapper (covers both image and shield)
+            wrap.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            });
         });
-        thumbEl.classList.add('active');
-    }
+    });
 </script>
 
 <?php include 'includes/footer.php'; ?>

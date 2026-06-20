@@ -5,7 +5,7 @@ define('WC_CONSUMER_KEY', 'ck_0d65c4929d2204b3fba2bac11a13c122df010a6c');
 define('WC_CONSUMER_SECRET', 'cs_e95af2bb3c32309e2a00ebc4dafa9062fed17cfb');
 
 define('CACHE_DIR', __DIR__ . '/../cache');
-define('CACHE_TTL', 300);
+define('CACHE_TTL', 1800); // 30 minutes — product listings rarely change
 
 function wc_api_get_cached($endpoint)
 {
@@ -60,7 +60,8 @@ function get_products_by_category_slug($slug)
 
 function get_all_products()
 {
-    return wc_api_get_cached("/products?per_page=100&status=publish");
+    // _fields limits the API response to only what products.php needs, drastically reducing payload size
+    return wc_api_get_cached("/products?per_page=100&status=publish&_fields=id,name,images,categories");
 }
 
 function get_all_categories()

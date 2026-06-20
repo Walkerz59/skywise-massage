@@ -4,7 +4,7 @@ $nav_links = [
     ['url' => 'about.php', 'label' => 'About Us'],
     ['url' => 'products.php', 'label' => 'Massage Sofa'],
     ['url' => 'products.php', 'label' => 'Massage Office Chair'],
-    ['url' => 'products.php', 'label' => 'Massage Beach Chair'],
+    ['url' => 'products.php', 'label' => 'Massage Outdoor Chair'],
     ['url' => 'products.php', 'label' => 'Massage Lounge Chair'],
 ];
 ?>
@@ -19,7 +19,8 @@ $nav_links = [
     <link rel="icon" href="assets/images/skywise-favicon.png">
 
     <title>Skywise Global Enterprise</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo file_exists('assets/css/style.css') ? filemtime('assets/css/style.css') : '1.0'; ?>">
+    <link rel="stylesheet"
+        href="assets/css/style.css?v=<?php echo file_exists('assets/css/style.css') ? filemtime('assets/css/style.css') : '1.0'; ?>">
 </head>
 
 <body>
@@ -28,7 +29,7 @@ $nav_links = [
         <div class="logo">
             <a href="index.php"><img src="assets/images/skywise-logo.png" alt="SKYWISE Logo"></a>
         </div>
-        
+
         <div class="menu-toggle" id="mobile-menu">
             <span class="bar"></span>
             <span class="bar"></span>

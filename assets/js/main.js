@@ -1,18 +1,33 @@
-// Block right-click context menu on ALL images site-wide (document-level catch-all)
-document.addEventListener('contextmenu', function(e) {
-    if (e.target.tagName === 'IMG') {
+// ── Image Protection (inspired by homelegance.com) ─────────────────────────
+// Block right-click context menu on ALL images site-wide
+document.addEventListener('contextmenu', function (e) {
+    if (e.target.tagName === 'IMG' || e.target.classList.contains('pd-img-shield')) {
         e.preventDefault();
         return false;
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Prevent dragging on all images
+document.addEventListener('DOMContentLoaded', function () {
     const images = document.querySelectorAll('img');
-    images.forEach(img => {
+
+    images.forEach(function (img) {
+        // Prevent drag-to-desktop
         img.setAttribute('draggable', 'false');
-        img.addEventListener('contextmenu', e => e.preventDefault());
-        img.addEventListener('dragstart', e => e.preventDefault());
+        img.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        img.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+        // Block mobile long-press "Save Image" (iOS Safari / Android Chrome)
+        var longPressTimer;
+        img.addEventListener('touchstart', function (e) {
+            longPressTimer = setTimeout(function () { e.preventDefault(); }, 500);
+        }, { passive: false });
+        img.addEventListener('touchend', function () { clearTimeout(longPressTimer); });
+        img.addEventListener('touchmove', function () { clearTimeout(longPressTimer); });
+    });
+
+    // Also block right-click on shield overlays
+    document.querySelectorAll('.pd-img-shield').forEach(function (shield) {
+        shield.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     });
 
     // Mobile menu toggle
